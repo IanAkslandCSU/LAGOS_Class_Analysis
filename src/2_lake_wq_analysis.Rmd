@@ -120,14 +120,16 @@ mapview(mean_spatial,zcol='log10_mean_chl')
 
 # Class work
 
-## 3) What is the correlation between Secchi Disk Depth and Chlorophyll a for
+## 1) What is the correlation between Secchi Disk Depth and Chlorophyll a for
 sites with at least 200 observations?
 
 - Here, I just want a plot of chla vs secchi for all sites 
 
 ```{r}
 #Your code here
-
+ggplot(data=mean_values_200,
+       aes(x=mean_chl, y=mean_secchi)) +
+       geom_point(colour = "blue", size = 1)
 
 ```
 
