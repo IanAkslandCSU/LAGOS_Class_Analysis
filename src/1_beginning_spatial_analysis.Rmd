@@ -11,6 +11,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 library(tidyverse) # Tidy packages
+library(ggplot2)
 library(sf) #Spatial package that can read and create shapefiles 
 library(mapview) #Interactive maps
 library(LAGOSNE) #Lots and lots of clean lake data
@@ -98,9 +99,10 @@ minnesota_lakes %>%
 
 ```{r}
 ill_iowa <- states %>%
-  filter(name %in% c('Iowa','Illinois'))
+  filter(name %in% c('Iowa','Illinois'))%>%
+  st_transform(2163)
 
-
+mapview(ill_iowa)
 ```
 
 
@@ -110,8 +112,11 @@ combined? How does this compare to Minnesota?
 
 ```{r}
 
+ill_iowa_lakes <- spatial_lakes[ill_iowa,]
+
 ```
 
+16,466 lakes in the two states acording to this data set
 
 ## 3) What is the distribution of lake size in Iowa vs. Minnesota?
 
@@ -120,6 +125,12 @@ y axis (check out geom_histogram)
 
 ```{r}
 
+ggplot(data=ill_iowa_lakes, aes(ill_iowa_lakes$lake_area_ha)) + 
+  geom_histogram(breaks=seq(0, 75, by=5), 
+                 col="black", 
+                 fill="blue") +
+  labs(title="Histogram for Lake Size in Illinois and Iowa") +
+  labs(x="Size in ha", y="Frequency")
 
 ```
 
@@ -129,10 +140,15 @@ by lake area in hectares
 
 ```{r}
 
+ill_iowa_lakes %>%
+  slice(1:500) %>%
+  arrange(lake_area_ha) %>%
+  mapview(.,zcol = 'lake_area_ha')
+
 ```
 
 
 ## 5) What other data sources might we use to understand how reservoirs and 
 natural lakes vary in size in these three states? 
 
-
+Rain fall and river flow would be good factors that relate to the size of these lakes/reservoirs
