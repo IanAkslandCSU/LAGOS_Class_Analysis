@@ -34,7 +34,7 @@ lagos <- lagosne_load()
 
 #Grab the lake centroid info
 lake_centers <- lagos$locus
-
+lake_states <- lagos$state
 # Make an sf object 
 spatial_lakes <- st_as_sf(lake_centers,coords=c('nhd_long','nhd_lat'),
                           crs=4326)
@@ -51,7 +51,7 @@ nutr <- lagos$epi_nutr
 
 ```{r}
 clarity_only <- nutr %>%
-  select(lagoslakeid,sampledate,chla,doc,secchi) %>%
+  select(lagoslakeid,sampledate,chla,doc,secchi,) %>%
   mutate(sampledate = as.character(sampledate) %>% ymd(.))
 
 ```
@@ -129,39 +129,38 @@ sites with at least 200 observations?
 #Your code here
 ggplot(data=mean_values_200,
        aes(x=mean_chl, y=mean_secchi)) +
-       geom_point(colour = "blue", size = 1)
+       geom_point(colour = "blue", size = 1)+
+  labs(title="Plot Relationship of mean chla vs mean secchi" )
 
 ```
 
 
 ## Why might this be the case? 
 
+The more chlorophyll means more algea so the disk is harder to see at deeper depths. The more growth in the lake the shallower the disk can go before loosing site of it.
 
 ## 2) What states have the most data? 
 
-### 2a) First you will need to make a lagos spatial dataset that has the total 
-number of counts per site.
+Did it all in this one chunk. See summary of data
 
 ```{r}
 
-## Your code here
+statesANDdata <- right_join(spatial_lakes,clarity_only,
+                          by='lagoslakeid')
+sumData <- statesANDdata %>%
+                      group_by(state_zoneid) %>%
+                        summarize(n = n()) %>%
+                           arrange(desc(n)) 
+
+sumData_StateNames <- right_join(lake_states,sumData)
+
+sumData_StateNames
+                              
+
 ```
 
+Minnesota has the most lakes data by over double the amount of second place Wisconsin
 
-### 2b) Second, you will need to join this point dataset to the us_boundaries 
-data. 
-
-```{r}
-## Your code here
-```
-
-
-### 2c) Then you will want to group by state and sum all the observations in that
-state and arrange that data from most to least toatl observations per state. 
-
-```{r}
-## Your code here. 
-```
 
 ##3 Is there a spatial pattern in Secchi disk depth for lakes with at least 200 
 observations?
